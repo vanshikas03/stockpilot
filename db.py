@@ -241,4 +241,231 @@ def delete_product(product_id):
     connection.close()
 
     return deleted
+# =====================================================
+# SUPPLIER FUNCTIONS
+# =====================================================
 
+def get_all_suppliers():
+    """
+    Returns all suppliers.
+    """
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM suppliers")
+
+    suppliers = cursor.fetchall()
+
+    connection.close()
+
+    return [dict(supplier) for supplier in suppliers]
+
+
+def get_supplier(supplier_id):
+    """
+    Returns one supplier by ID.
+    """
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "SELECT * FROM suppliers WHERE supplier_id = ?",
+        (supplier_id,)
+    )
+
+    supplier = cursor.fetchone()
+
+    connection.close()
+
+    if supplier:
+        return dict(supplier)
+
+    return None
+
+
+def add_supplier(
+    supplier_name,
+    contact_person,
+    email,
+    phone,
+    address
+):
+    """
+    Adds a new supplier.
+    """
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO suppliers
+        (
+            supplier_name,
+            contact_person,
+            email,
+            phone,
+            address,
+            created_at
+        )
+
+        VALUES
+        (
+            ?, ?, ?, ?, ?, datetime('now')
+        )
+    """,
+    (
+        supplier_name,
+        contact_person,
+        email,
+        phone,
+        address
+    ))
+
+    connection.commit()
+
+    supplier_id = cursor.lastrowid
+
+    connection.close()
+
+    return supplier_id
+
+
+def update_supplier(
+    supplier_id,
+    supplier_name,
+    contact_person,
+    email,
+    phone,
+    address
+):
+    """
+    Updates an existing supplier.
+    """
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE suppliers
+
+        SET
+            supplier_name = ?,
+            contact_person = ?,
+            email = ?,
+            phone = ?,
+            address = ?
+
+        WHERE supplier_id = ?
+    """,
+    (
+        supplier_name,
+        contact_person,
+        email,
+        phone,
+        address,
+        supplier_id
+    ))
+
+    connection.commit()
+
+    updated = cursor.rowcount
+
+    connection.close()
+
+    return updated
+
+
+def delete_supplier(supplier_id):
+    """
+    Deletes a supplier.
+    """
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "DELETE FROM suppliers WHERE supplier_id = ?",
+        (supplier_id,)
+    )
+
+    connection.commit()
+
+    deleted = cursor.rowcount
+
+    connection.close()
+
+    return deleted
+# =====================================================
+# INVENTORY LOG FUNCTIONS
+# =====================================================
+
+def add_inventory_log(
+    product_id,
+    action,
+    quantity_changed,
+    previous_quantity,
+    new_quantity,
+    remarks
+):
+    """
+    Adds a new inventory log.
+    """
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO inventory_logs
+        (
+            product_id,
+            action,
+            quantity_changed,
+            previous_quantity,
+            new_quantity,
+            remarks,
+            timestamp
+        )
+
+        VALUES
+        (
+            ?, ?, ?, ?, ?, ?, datetime('now')
+        )
+    """,
+    (
+        product_id,
+        action,
+        quantity_changed,
+        previous_quantity,
+        new_quantity,
+        remarks
+    ))
+
+    connection.commit()
+
+    connection.close()
+
+# =====================================================
+# VIEW INVENTORY LOGS
+# =====================================================
+
+def get_all_inventory_logs():
+    """
+    Returns all inventory logs.
+    """
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM inventory_logs
+        ORDER BY timestamp DESC
+    """)
+
+    logs = cursor.fetchall()
+
+    connection.close()
+
+    return [dict(log) for log in logs]

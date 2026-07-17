@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Dashboard</h2>
+
+<div class="cards">
+
+    <div class="card">
+        <h3>Total Products</h3>
+        <p>{{ total_products }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Total Quantity</h3>
+        <p>{{ total_quantity }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Low Stock Products</h3>
+        <p>{{ low_stock }}</p>
+    </div>
+
+</div>
+
+{% endblock %}
