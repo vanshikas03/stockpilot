@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
 
 from Db import (
     create_database,
@@ -27,6 +28,7 @@ from Db import (
 from analytics import get_analytics
 
 app = Flask(__name__)
+CORS(app)
 
 # Create database and tables
 create_database()
