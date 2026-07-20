@@ -1,3 +1,10 @@
+"""
+Analytics module.
+
+Generates inventory reports and business insights
+using Pandas.
+"""
+
 import sqlite3
 import pandas as pd
 
@@ -21,7 +28,7 @@ def get_analytics():
             "low_stock_products": [],
             "products_by_category": {},
             "most_valuable_products": [],
-            "restock_recommendations": []
+            "restock_recommendations": [],
         }
 
     # -----------------------------------
@@ -40,9 +47,7 @@ def get_analytics():
     # -----------------------------------
     # Low Stock Products
     # -----------------------------------
-    low_stock = df[
-        df["quantity"] <= df["reorder_level"]
-    ][
+    low_stock = df[df["quantity"] <= df["reorder_level"]][
         ["product_name", "quantity", "reorder_level"]
     ]
 
@@ -51,49 +56,31 @@ def get_analytics():
     # -----------------------------------
     # Products By Category
     # -----------------------------------
-    products_by_category = (
-        df.groupby("category")
-          .size()
-          .to_dict()
-    )
+    products_by_category = df.groupby("category").size().to_dict()
 
     # -----------------------------------
     # Most Valuable Products
     # -----------------------------------
-    valuable = (
-        df.sort_values(
-            by="inventory_value",
-            ascending=False
-        )
-        .head(5)
-    )
+    valuable = df.sort_values(by="inventory_value", ascending=False).head(5)
 
-    most_valuable_products = valuable[
-        ["product_name", "inventory_value"]
-    ].to_dict(orient="records")
+    most_valuable_products = valuable[["product_name", "inventory_value"]].to_dict(
+        orient="records"
+    )
 
     # -----------------------------------
     # Restock Recommendations
     # -----------------------------------
-    restock = df[
-        df["quantity"] <= df["reorder_level"]
-    ][
+    restock = df[df["quantity"] <= df["reorder_level"]][
         ["product_name", "quantity", "reorder_level"]
     ]
 
     restock_recommendations = restock.to_dict(orient="records")
 
     return {
-
         "total_products": total_products,
-
         "total_inventory_value": total_inventory_value,
-
         "low_stock_products": low_stock_products,
-
         "products_by_category": products_by_category,
-
         "most_valuable_products": most_valuable_products,
-
-        "restock_recommendations": restock_recommendations
+        "restock_recommendations": restock_recommendations,
     }

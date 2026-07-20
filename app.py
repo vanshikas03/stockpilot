@@ -1,29 +1,30 @@
+"""
+StockPilot Flask API.
+
+Provides REST API endpoints for product management, supplier management,
+inventory logs, and analytics.
+"""
+
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 
 from Db import (
     create_database,
-
     # Product Functions
     get_all_products,
     get_product,
     add_product,
     update_product,
     delete_product,
-
     # Supplier Functions
     get_all_suppliers,
     get_supplier,
     add_supplier,
     update_supplier,
     delete_supplier,
-
     # Inventory Logs
     add_inventory_log,
-    get_all_inventory_logs
-
-
-    
+    get_all_inventory_logs,
 )
 from analytics import get_analytics
 
@@ -44,21 +45,17 @@ def home():
 
     total_products = len(products)
 
-    total_quantity = sum(
-        product["quantity"] for product in products
-    )
+    total_quantity = sum(product["quantity"] for product in products)
 
     low_stock = sum(
-        1
-        for product in products
-        if product["quantity"] <= product["reorder_level"]
+        1 for product in products if product["quantity"] <= product["reorder_level"]
     )
 
     return render_template(
         "dashboard.html",
         total_products=total_products,
         total_quantity=total_quantity,
-        low_stock=low_stock
+        low_stock=low_stock,
     )
 
 
@@ -84,9 +81,7 @@ def fetch_product(product_id):
     if product:
         return jsonify(product), 200
 
-    return jsonify({
-        "error": "Product not found"
-    }), 404
+    return jsonify({"error": "Product not found"}), 404
 
 
 # ======================================================
@@ -98,9 +93,7 @@ def create_product():
     data = request.get_json()
 
     if not data:
-        return jsonify({
-            "error": "Request body cannot be empty."
-        }), 400
+        return jsonify({"error": "Request body cannot be empty."}), 400
 
     required_fields = [
         "supplier_id",
@@ -109,16 +102,14 @@ def create_product():
         "quantity",
         "purchase_price",
         "selling_price",
-        "reorder_level"
+        "reorder_level",
     ]
 
     for field in required_fields:
 
         if field not in data:
 
-            return jsonify({
-                "error": f"{field} is required."
-            }), 400
+            return jsonify({"error": f"{field} is required."}), 400
 
     product_id = add_product(
         data["supplier_id"],
@@ -127,22 +118,22 @@ def create_product():
         data["quantity"],
         data["purchase_price"],
         data["selling_price"],
-        data["reorder_level"]
-    )
-    
-    add_inventory_log(
-    product_id=product_id,
-    action="CREATE",
-    quantity_changed=data["quantity"],
-    previous_quantity=0,
-    new_quantity=data["quantity"],
-    remarks="Product added"
+        data["reorder_level"],
     )
 
-    return jsonify({
-        "message": "Product added successfully!",
-        "product_id": product_id
-    }), 201
+    add_inventory_log(
+        product_id=product_id,
+        action="CREATE",
+        quantity_changed=data["quantity"],
+        previous_quantity=0,
+        new_quantity=data["quantity"],
+        remarks="Product added",
+    )
+
+    return (
+        jsonify({"message": "Product added successfully!", "product_id": product_id}),
+        201,
+    )
 
 
 # ======================================================
@@ -152,19 +143,16 @@ def create_product():
 def edit_product(product_id):
 
     product = get_product(product_id)
-    previous_quantity = product["quantity"]
 
     if not product:
-        return jsonify({
-            "error": "Product not found"
-        }), 404
+        return jsonify({"error": "Product not found"}), 404
+
+    previous_quantity = product["quantity"]
 
     data = request.get_json()
 
     if not data:
-        return jsonify({
-            "error": "Request body cannot be empty."
-        }), 400
+        return jsonify({"error": "Request body cannot be empty."}), 400
 
     required_fields = [
         "supplier_id",
@@ -173,17 +161,15 @@ def edit_product(product_id):
         "quantity",
         "purchase_price",
         "selling_price",
-        "reorder_level"
+        "reorder_level",
     ]
 
     for field in required_fields:
 
         if field not in data:
 
-            return jsonify({
-                "error": f"{field} is required."
-            }), 400
-        
+            return jsonify({"error": f"{field} is required."}), 400
+
     previous_quantity = product["quantity"]
 
     update_product(
@@ -194,7 +180,7 @@ def edit_product(product_id):
         data["quantity"],
         data["purchase_price"],
         data["selling_price"],
-        data["reorder_level"]
+        data["reorder_level"],
     )
 
     add_inventory_log(
@@ -203,13 +189,10 @@ def edit_product(product_id):
         quantity_changed=data["quantity"] - previous_quantity,
         previous_quantity=previous_quantity,
         new_quantity=data["quantity"],
-        remarks="Product updated"
+        remarks="Product updated",
     )
 
-
-    return jsonify({
-        "message": "Product updated successfully!"
-    }), 200
+    return jsonify({"message": "Product updated successfully!"}), 200
 
 
 # ======================================================
@@ -217,15 +200,14 @@ def edit_product(product_id):
 # ======================================================
 @app.route("/products/<int:product_id>", methods=["DELETE"])
 def remove_product(product_id):
-    
+    """Delete a product."""
+
     product = get_product(product_id)
-    previous_quantity = product["quantity"]
 
     if not product:
-        return jsonify({
-            "error": "Product not found"
-        }), 404
-    
+        return jsonify({"error": "Product not found"}), 404
+
+    previous_quantity = product["quantity"]
 
     delete_product(product_id)
 
@@ -235,12 +217,10 @@ def remove_product(product_id):
         quantity_changed=-previous_quantity,
         previous_quantity=previous_quantity,
         new_quantity=0,
-        remarks="Product deleted"
+        remarks="Product deleted",
     )
 
-    return jsonify({
-        "message": "Product deleted successfully!"
-    }), 200
+    return jsonify({"message": "Product deleted successfully!"}), 200
 
 
 # ======================================================
@@ -257,6 +237,7 @@ def products_page():
 @app.route("/suppliers-page")
 def suppliers_page():
     return "<h2>Suppliers Page - Coming Soon</h2>"
+
 
 # ======================================================
 # GET ALL SUPPLIERS
@@ -280,9 +261,7 @@ def fetch_supplier(supplier_id):
     if supplier:
         return jsonify(supplier), 200
 
-    return jsonify({
-        "error": "Supplier not found"
-    }), 404
+    return jsonify({"error": "Supplier not found"}), 404
 
 
 # ======================================================
@@ -294,38 +273,30 @@ def create_supplier():
     data = request.get_json()
 
     if not data:
-        return jsonify({
-            "error": "Request body cannot be empty."
-        }), 400
+        return jsonify({"error": "Request body cannot be empty."}), 400
 
-    required_fields = [
-        "supplier_name",
-        "contact_person",
-        "email",
-        "phone",
-        "address"
-    ]
+    required_fields = ["supplier_name", "contact_person", "email", "phone", "address"]
 
     for field in required_fields:
 
         if field not in data:
 
-            return jsonify({
-                "error": f"{field} is required."
-            }), 400
+            return jsonify({"error": f"{field} is required."}), 400
 
     supplier_id = add_supplier(
         data["supplier_name"],
         data["contact_person"],
         data["email"],
         data["phone"],
-        data["address"]
+        data["address"],
     )
 
-    return jsonify({
-        "message": "Supplier added successfully!",
-        "supplier_id": supplier_id
-    }), 201
+    return (
+        jsonify(
+            {"message": "Supplier added successfully!", "supplier_id": supplier_id}
+        ),
+        201,
+    )
 
 
 # ======================================================
@@ -337,9 +308,7 @@ def edit_supplier(supplier_id):
     supplier = get_supplier(supplier_id)
 
     if not supplier:
-        return jsonify({
-            "error": "Supplier not found"
-        }), 404
+        return jsonify({"error": "Supplier not found"}), 404
 
     data = request.get_json()
 
@@ -349,12 +318,10 @@ def edit_supplier(supplier_id):
         data["contact_person"],
         data["email"],
         data["phone"],
-        data["address"]
+        data["address"],
     )
 
-    return jsonify({
-        "message": "Supplier updated successfully!"
-    }), 200
+    return jsonify({"message": "Supplier updated successfully!"}), 200
 
 
 # ======================================================
@@ -366,15 +333,12 @@ def remove_supplier(supplier_id):
     supplier = get_supplier(supplier_id)
 
     if not supplier:
-        return jsonify({
-            "error": "Supplier not found"
-        }), 404
+        return jsonify({"error": "Supplier not found"}), 404
 
     delete_supplier(supplier_id)
 
-    return jsonify({
-        "message": "Supplier deleted successfully!"
-    }), 200
+    return jsonify({"message": "Supplier deleted successfully!"}), 200
+
 
 # ======================================================
 # GET ALL INVENTORY LOGS
@@ -386,12 +350,15 @@ def fetch_inventory_logs():
 
     return jsonify(logs), 200
 
+
 # ======================================================
 # ANALYTICS PAGE (Coming Next)
 # ======================================================
 @app.route("/analytics-page")
 def analytics_page():
     return "<h2>Analytics Page - Coming Soon</h2>"
+
+
 # ======================================================
 # ANALYTICS API
 # ======================================================
@@ -401,6 +368,7 @@ def analytics():
     data = get_analytics()
 
     return jsonify(data), 200
+
 
 # ======================================================
 # RUN APPLICATION

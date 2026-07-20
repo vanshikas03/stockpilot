@@ -75,6 +75,7 @@ def create_database():
 if __name__ == "__main__":
     create_database()
 
+
 def get_connection():
     """
     Returns a connection to the SQLite database.
@@ -82,6 +83,7 @@ def get_connection():
     connection = sqlite3.connect(DATABASE_NAME)
     connection.row_factory = sqlite3.Row
     return connection
+
 
 def get_all_products():
     """
@@ -98,6 +100,7 @@ def get_all_products():
 
     return [dict(product) for product in products]
 
+
 def get_product(product_id):
     """
     Returns one product by ID.
@@ -105,10 +108,7 @@ def get_product(product_id):
     connection = get_connection()
     cursor = connection.cursor()
 
-    cursor.execute(
-        "SELECT * FROM products WHERE product_id = ?",
-        (product_id,)
-    )
+    cursor.execute("SELECT * FROM products WHERE product_id = ?", (product_id,))
 
     product = cursor.fetchone()
 
@@ -119,6 +119,7 @@ def get_product(product_id):
 
     return None
 
+
 def add_product(
     supplier_id,
     product_name,
@@ -126,7 +127,7 @@ def add_product(
     quantity,
     purchase_price,
     selling_price,
-    reorder_level
+    reorder_level,
 ):
     """
     Adds a new product.
@@ -135,7 +136,8 @@ def add_product(
     connection = get_connection()
     cursor = connection.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO products
         (
             supplier_id,
@@ -151,15 +153,16 @@ def add_product(
 
         VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
     """,
-    (
-        supplier_id,
-        product_name,
-        category,
-        quantity,
-        purchase_price,
-        selling_price,
-        reorder_level
-    ))
+        (
+            supplier_id,
+            product_name,
+            category,
+            quantity,
+            purchase_price,
+            selling_price,
+            reorder_level,
+        ),
+    )
 
     connection.commit()
 
@@ -169,6 +172,7 @@ def add_product(
 
     return product_id
 
+
 def update_product(
     product_id,
     supplier_id,
@@ -177,7 +181,7 @@ def update_product(
     quantity,
     purchase_price,
     selling_price,
-    reorder_level
+    reorder_level,
 ):
     """
     Updates an existing product.
@@ -186,7 +190,8 @@ def update_product(
     connection = get_connection()
     cursor = connection.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         UPDATE products
 
         SET
@@ -201,16 +206,17 @@ def update_product(
 
         WHERE product_id = ?
     """,
-    (
-        supplier_id,
-        product_name,
-        category,
-        quantity,
-        purchase_price,
-        selling_price,
-        reorder_level,
-        product_id
-    ))
+        (
+            supplier_id,
+            product_name,
+            category,
+            quantity,
+            purchase_price,
+            selling_price,
+            reorder_level,
+            product_id,
+        ),
+    )
 
     connection.commit()
 
@@ -219,6 +225,7 @@ def update_product(
     connection.close()
 
     return updated
+
 
 def delete_product(product_id):
     """
@@ -229,10 +236,7 @@ def delete_product(product_id):
 
     cursor = connection.cursor()
 
-    cursor.execute(
-        "DELETE FROM products WHERE product_id = ?",
-        (product_id,)
-    )
+    cursor.execute("DELETE FROM products WHERE product_id = ?", (product_id,))
 
     connection.commit()
 
@@ -241,9 +245,12 @@ def delete_product(product_id):
     connection.close()
 
     return deleted
+
+
 # =====================================================
 # SUPPLIER FUNCTIONS
 # =====================================================
+
 
 def get_all_suppliers():
     """
@@ -270,10 +277,7 @@ def get_supplier(supplier_id):
     connection = get_connection()
     cursor = connection.cursor()
 
-    cursor.execute(
-        "SELECT * FROM suppliers WHERE supplier_id = ?",
-        (supplier_id,)
-    )
+    cursor.execute("SELECT * FROM suppliers WHERE supplier_id = ?", (supplier_id,))
 
     supplier = cursor.fetchone()
 
@@ -285,13 +289,7 @@ def get_supplier(supplier_id):
     return None
 
 
-def add_supplier(
-    supplier_name,
-    contact_person,
-    email,
-    phone,
-    address
-):
+def add_supplier(supplier_name, contact_person, email, phone, address):
     """
     Adds a new supplier.
     """
@@ -299,7 +297,8 @@ def add_supplier(
     connection = get_connection()
     cursor = connection.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO suppliers
         (
             supplier_name,
@@ -315,13 +314,8 @@ def add_supplier(
             ?, ?, ?, ?, ?, datetime('now')
         )
     """,
-    (
-        supplier_name,
-        contact_person,
-        email,
-        phone,
-        address
-    ))
+        (supplier_name, contact_person, email, phone, address),
+    )
 
     connection.commit()
 
@@ -332,14 +326,7 @@ def add_supplier(
     return supplier_id
 
 
-def update_supplier(
-    supplier_id,
-    supplier_name,
-    contact_person,
-    email,
-    phone,
-    address
-):
+def update_supplier(supplier_id, supplier_name, contact_person, email, phone, address):
     """
     Updates an existing supplier.
     """
@@ -347,7 +334,8 @@ def update_supplier(
     connection = get_connection()
     cursor = connection.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         UPDATE suppliers
 
         SET
@@ -359,14 +347,8 @@ def update_supplier(
 
         WHERE supplier_id = ?
     """,
-    (
-        supplier_name,
-        contact_person,
-        email,
-        phone,
-        address,
-        supplier_id
-    ))
+        (supplier_name, contact_person, email, phone, address, supplier_id),
+    )
 
     connection.commit()
 
@@ -385,10 +367,7 @@ def delete_supplier(supplier_id):
     connection = get_connection()
     cursor = connection.cursor()
 
-    cursor.execute(
-        "DELETE FROM suppliers WHERE supplier_id = ?",
-        (supplier_id,)
-    )
+    cursor.execute("DELETE FROM suppliers WHERE supplier_id = ?", (supplier_id,))
 
     connection.commit()
 
@@ -397,17 +376,15 @@ def delete_supplier(supplier_id):
     connection.close()
 
     return deleted
+
+
 # =====================================================
 # INVENTORY LOG FUNCTIONS
 # =====================================================
 
+
 def add_inventory_log(
-    product_id,
-    action,
-    quantity_changed,
-    previous_quantity,
-    new_quantity,
-    remarks
+    product_id, action, quantity_changed, previous_quantity, new_quantity, remarks
 ):
     """
     Adds a new inventory log.
@@ -416,7 +393,8 @@ def add_inventory_log(
     connection = get_connection()
     cursor = connection.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO inventory_logs
         (
             product_id,
@@ -433,22 +411,25 @@ def add_inventory_log(
             ?, ?, ?, ?, ?, ?, datetime('now')
         )
     """,
-    (
-        product_id,
-        action,
-        quantity_changed,
-        previous_quantity,
-        new_quantity,
-        remarks
-    ))
+        (
+            product_id,
+            action,
+            quantity_changed,
+            previous_quantity,
+            new_quantity,
+            remarks,
+        ),
+    )
 
     connection.commit()
 
     connection.close()
 
+
 # =====================================================
 # VIEW INVENTORY LOGS
 # =====================================================
+
 
 def get_all_inventory_logs():
     """
