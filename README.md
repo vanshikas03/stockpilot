@@ -301,12 +301,19 @@ http://localhost:3000
 # Screenshots
 
 - Dashboard
-- Products
-- Suppliers
-- Analytics
-- Inventory Logs
+  <img width="1731" height="1309" alt="image" src="https://github.com/user-attachments/assets/4235dcc9-41c3-4022-aa33-d824e955e772" />
 
-(Add screenshots here after capturing your application.)
+- Products
+<img width="1731" height="1190" alt="image" src="https://github.com/user-attachments/assets/726a34ed-1a8d-4359-b2a4-7dc1be1473cb" />
+
+- Suppliers
+  <img width="1731" height="943" alt="image" src="https://github.com/user-attachments/assets/16bae97d-f5b5-48dc-bccb-b4a09a85d315" />
+
+- Analytics
+  <img width="1731" height="1548" alt="image" src="https://github.com/user-attachments/assets/cdd2d017-2a88-4185-92d6-5c7162b49929" />
+
+- Inventory Logs
+<img width="1731" height="1011" alt="image" src="https://github.com/user-attachments/assets/fc2a7ab7-fc11-40a7-92be-47990d2eff79" />
 
 ---
 
