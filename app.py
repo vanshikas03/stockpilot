@@ -8,7 +8,7 @@ inventory logs, and analytics.
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 
-from Db import (
+from db import (
     create_database,
     # Product Functions
     get_all_products,
